@@ -1,0 +1,41 @@
+application: spelling-set-a1
+version: 3
+runtime: python27
+api_version: 1
+threadsafe: yes
+
+handlers:
+# the root URL returns the static smeebu homepage.
+- url: /
+  static_files: smeebu_content/index.html
+  upload: smeebu_content/index.html
+
+# test files (swf, js etc) are located in the test folder. 
+- url: /test_content
+  static_dir: test_content
+
+# process requestions for favicon.ico - the little logo that appears in the browser address bar  
+- url: /favicon\.ico
+  static_files: smeebu_content/favicon.ico
+  upload: smeebu_content/favicon\.ico
+
+# the results 
+- url: /results.html
+  static_files: QuizResults/results.html
+  upload: QuizResults/results.html
+
+# all other htm or html requests TODO make more specific to catch invalid pages and return Sorry page
+# enables old URLs to map to new content folders 
+- url: /(.*\.(htm|html))
+  static_files: smeebu_content/\1
+  upload: smeebu_content/(.*\.(htm|html))
+
+- url: .*
+  script: main.app
+
+libraries:
+- name: webapp2
+  version: "2.5.2"
+
+- name: jinja2
+  version: latest

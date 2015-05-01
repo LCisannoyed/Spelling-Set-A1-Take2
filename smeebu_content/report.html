@@ -1,0 +1,28 @@
+<html>
+<head>
+	<title>sample page</title>
+	
+
+<p>report page</p>
+<?php
+
+    header('Access-Control-Allow-Origin: *');
+
+    if ($_SERVER['REQUEST_METHOD'] != 'POST')
+    {
+        echo "POST request expected";
+        return;
+    }
+
+    error_reporting(E_ALL && E_WARNING && E_NOTICE);
+    ini_set('display_errors', 0);
+    ini_set('log_errors', 1);
+?>
+
+<p>Post attempt1: <?php echo $_POST["USER_NAME"]; ?><p>
+<p>Get attempt1: <?php echo $_GET["USER_NAME"]; ?><p>
+
+
+
+</body>
+</html>

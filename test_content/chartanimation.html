@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+   <head>
+     <!--Load the AJAX API-->
+     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+     <script type="text/javascript">
+       //load the required chart libraries - corechart contains details for simple charts such as bar and column, table chart also requested
+       google.load('visualization', '1.0', {'packages':['corechart','table']});
+       //once the libraries are loaded call the function to draw the chart
+       google.setOnLoadCallback(init);
+
+
+      //GLOBAL VARS
+      selectedItem = null;
+      x = null;
+      y = null;
+
+      function init() {
+        // SET CHART OPTIONS
+        var options = {
+          title: 'Criteria Quality/Difficulty',
+          height: 600,
+          width: 1120,
+          tooltip: {textStyle: {color: '#FF0000'}, showColorCode: true, trigger: 'selection'},
+          hAxis: { title: 'Task Components',
+            baselineColor: 'white', 
+            gridlines: {color: 'white'},
+            minorGridlines: {color: 'white'},
+            minValue: 0, 
+            maxValue: 7,
+            ticks: [{v:1, f:'Component 1'}, {v:2, f:'Component 2'}, {v:3, f:'Component 3'}, {v:4, f:'Component 4'}, {v:5, f:'Component 5'}, {v:6, f:'Component 6'}] },
+          vAxis: {title: 'Difficulty', 
+            minValue: 0, 
+            maxValue: 10, 
+            ticks: [0,1,2,3,4,5,6,7,8,9,10], 
+            baselineColor: 'white', 
+            gridlines: {color: 'white'},
+            minorGridlines: {color: 'white'}},
+          legend: 'none',
+          //colors: ['#087037'],
+          pointShape: 'diamond',
+          pointSize: 18,
+          animation: {
+            duration: 400,
+            easing: 'inAndOut',
+          }
+        };
+        /*
+        var options = {
+        /  width: 400,
+          height: 240,
+          animation:{
+            duration: 1000,
+            easing: 'out',
+          },
+          vAxis: {minValue:0, maxValue:1000}
+        }; */
+
+        // INITIAL CHART DATA
+        //var data = new google.visualization.DataTable();
+        //data.addColumn('string', 'N');
+        //data.addColumn('number', 'Value');
+        //data.addRow(['V', 200]);
+        var data = google.visualization.arrayToDataTable([
+          ['Component', 'Criteria3', 'Criteria2', 'Criteria1'],
+          [ 1, 0.3, 0.2, 0.1],
+          [ 2, 0.3, 0.2, 0.1],
+          [ 3, 0.3, 0.2, 0.1],
+          [ 4, 0.3, 0.2, 0.1],
+          [ 5, 0.3, 0.2, 0.1],
+          [ 6, 0.3, 0.2, 0.1]
+        ]);
+
+        //var chart = new google.visualization.ColumnChart(
+        var chart = new google.visualization.ScatterChart(
+            document.getElementById('example-visualization'));
+        var button = document.getElementById('b1');
+        var buttondown = document.getElementById('b1down');
+
+        function drawChart() {
+          // Disabling the button while the chart is drawing.
+          button.disabled = true;
+          buttondown.disabled = true;
+          google.visualization.events.addListener(chart, 'ready',
+              function() {
+                button.disabled = false;
+                buttondown.disabled = false;
+                if (x!=null && y!=null) {
+                  chart.setSelection([{row:x,column:y}]);    
+                }
+              });
+          chart.draw(data, options);
+        }
+
+        // Listen for the 'select' event, and call my function selectHandler() when
+        // the user selects something on the chart.
+        google.visualization.events.addListener(chart, 'select', selectHandler);
+
+        // The select handler. Call the chart's getSelection() method
+        function selectHandler() {
+          //var selectedItem = chart.getSelection()[0];
+          selectedItem = chart.getSelection()[0];
+          if (selectedItem) {
+            var component = data.getValue(selectedItem.row, 0);
+            var criteria = data.getColumnLabel(selectedItem.column);
+            var quality = data.getValue(selectedItem.row, selectedItem.column);
+            x = selectedItem.row;
+            y = selectedItem.column;
+            //alert('Component ' + component + ', ' + criteria + ', Quality ' + quality + ' located at (' + selectedItem.row + ', ' + selectedItem.column + ')');
+            //newval = Number(prompt("Please enter a new value")); 
+            //data.setValue(selectedItem.row, selectedItem.column, newval);
+            //chart.draw(data, options);
+          };
+        };
+
+        button.onclick = function() {
+          updatevalue(1);
+        }
+        buttondown.onclick = function() {
+          updatevalue(-1);
+        }
+
+        function updatevalue(val) {
+          if (x==null || y==null) {
+            alert('Select a Task Component Criteria first before adjusting the Quality');
+          } else {
+            var newValue = data.getValue(x, y) + val;
+            data.setValue(x, y, newValue);
+            drawChart();         
+          }
+
+        }
+        drawChart();
+      }
+     </script>
+   </head>
+   <body>
+    <div id="example-visualization"></div>
+    <form>
+      <input id="b1" type="button" value="up"></input>
+      <input id="b1down" type="button" value="down"></input>
+    </form>
+   </body>
+   </html> 
